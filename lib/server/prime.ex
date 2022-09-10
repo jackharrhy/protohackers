@@ -9,8 +9,7 @@ defmodule Proto.Server.Prime do
   end
 
   def run(port) do
-    {:ok, socket} =
-      :gen_tcp.listen(port, [:binary, packet: :line, active: false, reuseaddr: true])
+    {:ok, socket} = :gen_tcp.listen(port, [:binary, packet: :raw, active: false, reuseaddr: true])
 
     info(socket, "accepting connections on port #{port}")
     loop_acceptor(socket)
@@ -45,19 +44,28 @@ defmodule Proto.Server.Prime do
     %{"method" => "isPrime", "prime" => is_prime?(number)}
   end
 
-  defp serve(socket) do
-    case :gen_tcp.recv(socket, 0) do
+  defp chunk(socket, message \\ "") do
+    case :gen_tcp.recv(socket, 1) do
       {:ok, data} ->
-        info(socket, "recv #{data}")
-        req = Jason.decode!(data)
-        info(socket, "req #{inspect(req)}")
-        resp = handle_request(req)
-        info(socket, "resp #{inspect(resp)}")
-        :ok = :gen_tcp.send(socket, "#{Jason.encode!(resp)}\n")
-        serve(socket)
+        if data == "\n" do
+          {:ok, message}
+        else
+          chunk(socket, message <> data)
+        end
 
-      {:error, :closed} ->
-        nil
+      {:error, e} ->
+        {:error, e}
     end
+  end
+
+  defp serve(socket) do
+    {:ok, line} = chunk(socket)
+    info(socket, "line #{line}")
+    req = Jason.decode!(line)
+    info(socket, "req #{inspect(req)}")
+    resp = handle_request(req)
+    info(socket, "resp #{inspect(resp)}")
+    :ok = :gen_tcp.send(socket, "#{Jason.encode!(resp)}\n")
+    serve(socket)
   end
 end
