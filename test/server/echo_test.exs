@@ -30,7 +30,7 @@ defmodule ProtoTest.Server.Echo do
     tasks =
       0..5
       |> Enum.map(fn _x ->
-        :timer.sleep(Enum.random(0..100))
+        :timer.sleep(Enum.random(0..10))
 
         Task.async(fn ->
           :timer.sleep(Enum.random(0..100))

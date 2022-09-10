@@ -4,9 +4,13 @@ defmodule Proto.Server.Prime do
   @server_port 4050
   def port, do: @server_port
 
+  def info(socket, message) do
+    Logger.info("Prime #{inspect(socket)}: #{message}")
+  end
+
   def run(port) do
     {:ok, socket} = :gen_tcp.listen(port, [:binary, packet: :raw, active: false, reuseaddr: true])
-    Logger.info("Prime Accepting connections on port #{port}")
+    info(socket, "accepting connections on port #{port}")
     loop_acceptor(socket)
   end
 
@@ -14,6 +18,7 @@ defmodule Proto.Server.Prime do
     {:ok, client} = :gen_tcp.accept(socket)
     {:ok, pid} = Task.Supervisor.start_child(Proto.TaskSupervisor, fn -> serve(client) end)
     :ok = :gen_tcp.controlling_process(client, pid)
+    info(socket, "accept #{inspect(client)}, managed by #{inspect(pid)}")
     loop_acceptor(socket)
   end
 
@@ -32,8 +37,11 @@ defmodule Proto.Server.Prime do
   defp serve(socket) do
     case :gen_tcp.recv(socket, 0) do
       {:ok, data} ->
+        info(socket, "recv #{data}")
         req = Jason.decode!(data)
+        info(socket, "req #{data}")
         resp = handle_request(req)
+        info(socket, "resp #{data}")
         :ok = :gen_tcp.send(socket, "#{Jason.encode!(resp)}\n")
         serve(socket)
 
