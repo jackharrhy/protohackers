@@ -15,8 +15,13 @@ defmodule Proto.Server.Echo do
   end
 
   defp serve(socket) do
-    {:ok, data} = :gen_tcp.recv(socket, 0)
-    :gen_tcp.send(socket, data)
-    serve(socket)
+    case :gen_tcp.recv(socket, 0) do
+      {:ok, data} ->
+        :ok = :gen_tcp.send(socket, data)
+        serve(socket)
+
+      {:error, :closed} ->
+        nil
+    end
   end
 end
