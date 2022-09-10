@@ -32,7 +32,7 @@ defmodule ProtoTest.Server.Prime do
   end
 
   test "handles valid input, and prime numbers as true" do
-    [7, 53, 97, 199, 911]
+    [2, 7, 53, 97, 199, 911]
     |> Enum.map(fn number ->
       init_socket()
       |> send_assert_resp(

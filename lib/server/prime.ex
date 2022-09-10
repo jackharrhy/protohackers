@@ -22,16 +22,23 @@ defmodule Proto.Server.Prime do
     loop_acceptor(socket)
   end
 
-  defp is_prime(n) when n <= 1 do
+  defp is_prime?(n) when n in [2, 3], do: true
+
+  defp is_prime?(n) when n > 1 do
+    floored_sqrt =
+      :math.sqrt(n)
+      |> Float.floor()
+      |> round
+
+    !Enum.any?(2..floored_sqrt, &(rem(n, &1) == 0))
+  end
+
+  defp is_prime?(_n) do
     false
   end
 
-  defp is_prime(n) do
-    Enum.find(2..(trunc(:math.sqrt(n)) + 1), fn x -> rem(n, x) == 0 end) == nil
-  end
-
   defp handle_request(%{"method" => "isPrime", "number" => number}) when is_number(number) do
-    %{"method" => "isPrime", "prime" => is_prime(number)}
+    %{"method" => "isPrime", "prime" => is_prime?(number)}
   end
 
   defp serve(socket) do
