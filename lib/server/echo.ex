@@ -14,16 +14,19 @@ defmodule Proto.Server.Echo do
     {:ok, client} = :gen_tcp.accept(socket)
     {:ok, pid} = Task.Supervisor.start_child(Proto.TaskSupervisor, fn -> serve(client) end)
     :ok = :gen_tcp.controlling_process(client, pid)
+    Logger.info("#{inspect(socket)} accept: #{inspect(client)}, managed by #{inspect(pid)}")
     loop_acceptor(socket)
   end
 
   defp serve(socket) do
     case :gen_tcp.recv(socket, 0) do
       {:ok, data} ->
+        Logger.info("#{inspect(socket)}: recv #{data}, sending back")
         :ok = :gen_tcp.send(socket, data)
         serve(socket)
 
       {:error, :closed} ->
+        Logger.info("#{inspect(socket)} closed")
         nil
     end
   end
