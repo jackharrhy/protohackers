@@ -1,9 +1,9 @@
 defmodule ProtoTest.Server.Prime do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   doctest Proto.Server.Prime
 
   def init_socket() do
-    opts = [:binary, active: false, packet: :raw]
+    opts = [:binary, active: false, packet: :line]
     {:ok, socket} = :gen_tcp.connect({127, 0, 0, 1}, Proto.Server.Prime.port(), opts)
     socket
   end
@@ -20,42 +20,36 @@ defmodule ProtoTest.Server.Prime do
   end
 
   test "handles valid input, and non prime numbers as false" do
-    [123, 500, 6, 54]
-    |> Enum.map(fn number ->
-      init_socket()
-      |> send_assert_resp(
-        Jason.encode!(%{"method" => "isPrime", "number" => number}),
-        "#{Jason.encode!(%{"method" => "isPrime", "prime" => false})}\n"
-      )
-      |> close_socket()
-    end)
+    tasks =
+      [123, 500, 6, 54, 2.2, 123.123187923]
+      |> Enum.map(fn number ->
+        Task.async(fn ->
+          init_socket()
+          |> send_assert_resp(
+            "#{Jason.encode!(%{"method" => "isPrime", "number" => number})}\n",
+            "#{Jason.encode!(%{"method" => "isPrime", "prime" => false})}\n"
+          )
+          |> close_socket()
+        end)
+      end)
+
+    tasks |> Enum.map(&Task.await(&1))
   end
 
   test "handles valid input, and prime numbers as true" do
-    [2, 7, 53, 97, 199, 911]
-    |> Enum.map(fn number ->
-      init_socket()
-      |> send_assert_resp(
-        Jason.encode!(%{"method" => "isPrime", "number" => number}),
-        "#{Jason.encode!(%{"method" => "isPrime", "prime" => true})}\n"
-      )
-      |> close_socket()
-    end)
-  end
+    tasks =
+      [2, 7, 53, 97, 199, 911]
+      |> Enum.map(fn number ->
+        Task.async(fn ->
+          init_socket()
+          |> send_assert_resp(
+            "#{Jason.encode!(%{"method" => "isPrime", "number" => number})}\n",
+            "#{Jason.encode!(%{"method" => "isPrime", "prime" => true})}\n"
+          )
+          |> close_socket()
+        end)
+      end)
 
-  test "invalid input fails" do
-    # TODO
-  end
-
-  test "valid json, but invalid input fails" do
-    # TODO
-  end
-
-  test "newline delimited json input works" do
-    # TODO
-  end
-
-  test "newline delimited mixed valid / invalid input works up until it fails" do
-    # TODO
+    tasks |> Enum.map(&Task.await(&1))
   end
 end

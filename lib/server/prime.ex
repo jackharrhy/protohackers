@@ -24,6 +24,8 @@ defmodule Proto.Server.Prime do
     loop_acceptor(socket)
   end
 
+  defp is_prime?(n) when is_float(n), do: false
+
   defp is_prime?(n) when n in [2, 3], do: true
 
   defp is_prime?(n) when n > 1 do
