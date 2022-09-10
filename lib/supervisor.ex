@@ -14,6 +14,9 @@ defmodule Proto.Supervisor do
       ),
       Supervisor.child_spec({Task, fn -> Proto.Server.Prime.run(Proto.Server.Prime.port()) end},
         id: "prime"
+      ),
+      Supervisor.child_spec({Task, fn -> Proto.Server.Means.run(Proto.Server.Means.port()) end},
+        id: "means"
       )
     ]
 

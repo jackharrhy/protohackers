@@ -1,5 +1,5 @@
 defmodule ProtoTest.Server.Prime do
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
   doctest Proto.Server.Prime
 
   def init_socket() do

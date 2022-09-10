@@ -30,6 +30,6 @@ Took some time but eventually figured out it was https://en.wikipedia.org/wiki/M
 
 Fixed it up by making my own chunk impl., and tada!
 
-## 2: Means to an End
+## 2: Means to an End (`lib/server/means.ex)
 
-Status: Not Started
+Status: In Progress
