@@ -17,7 +17,7 @@ defmodule EchoServer do
   defp loop_acceptor(socket) do
     try do
       {:ok, client} = :gen_tcp.accept(socket)
-      serve(client)
+      Task.start_link(fn -> serve(client) end)
     rescue
       e -> Logger.info(Exception.format(:error, e, __STACKTRACE__))
     end
