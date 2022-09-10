@@ -39,9 +39,9 @@ defmodule Proto.Server.Prime do
       {:ok, data} ->
         info(socket, "recv #{data}")
         req = Jason.decode!(data)
-        info(socket, "req #{data}")
+        info(socket, "req #{req}")
         resp = handle_request(req)
-        info(socket, "resp #{data}")
+        info(socket, "resp #{resp}")
         :ok = :gen_tcp.send(socket, "#{Jason.encode!(resp)}\n")
         serve(socket)
 
