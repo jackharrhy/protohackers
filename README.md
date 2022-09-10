@@ -8,7 +8,7 @@ Status: Complete! (157th on leaderboard)
 
 ## 1: Prime Time
 
-Status: Not Started
+Status: Started
 
 ## 2: Means to an End
 
