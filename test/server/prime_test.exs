@@ -42,4 +42,20 @@ defmodule ProtoTest.Server.Prime do
       |> close_socket()
     end)
   end
+
+  test "invalid input fails" do
+    # TODO
+  end
+
+  test "valid json, but invalid input fails" do
+    # TODO
+  end
+
+  test "newline delimited json input works" do
+    # TODO
+  end
+
+  test "newline delimited mixed valid / invalid input works up until it fails" do
+    # TODO
+  end
 end

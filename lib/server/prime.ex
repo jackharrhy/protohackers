@@ -9,7 +9,9 @@ defmodule Proto.Server.Prime do
   end
 
   def run(port) do
-    {:ok, socket} = :gen_tcp.listen(port, [:binary, packet: :raw, active: false, reuseaddr: true])
+    {:ok, socket} =
+      :gen_tcp.listen(port, [:binary, packet: :line, active: false, reuseaddr: true])
+
     info(socket, "accepting connections on port #{port}")
     loop_acceptor(socket)
   end
