@@ -1,10 +1,10 @@
 defmodule ProtoTest.Server.Echo do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   doctest Proto.Server.Echo
 
   def init_socket() do
     opts = [:binary, active: false, packet: :raw]
-    {:ok, socket} = :gen_tcp.connect({127, 0, 0, 1}, 4040, opts)
+    {:ok, socket} = :gen_tcp.connect({127, 0, 0, 1}, Proto.Server.Echo.port(), opts)
     socket
   end
 

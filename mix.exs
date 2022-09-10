@@ -19,6 +19,8 @@ defmodule Proto.MixProject do
   end
 
   defp deps do
-    []
+    [
+      {:jason, "~> 1.3"}
+    ]
   end
 end

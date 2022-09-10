@@ -9,7 +9,12 @@ defmodule Proto.Supervisor do
   def init(:ok) do
     children = [
       {Task.Supervisor, name: Proto.TaskSupervisor},
-      {Task, fn -> Proto.Server.Echo.run(4040) end}
+      Supervisor.child_spec({Task, fn -> Proto.Server.Echo.run(Proto.Server.Echo.port()) end},
+        id: "echo"
+      ),
+      Supervisor.child_spec({Task, fn -> Proto.Server.Prime.run(Proto.Server.Prime.port()) end},
+        id: "prime"
+      )
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

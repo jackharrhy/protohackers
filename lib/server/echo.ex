@@ -1,6 +1,9 @@
 defmodule Proto.Server.Echo do
   require Logger
 
+  @server_port 4040
+  def port, do: @server_port
+
   def run(port) do
     {:ok, socket} = :gen_tcp.listen(port, [:binary, packet: :raw, active: false, reuseaddr: true])
     Logger.info("Echo Accepting connections on port #{port}")
