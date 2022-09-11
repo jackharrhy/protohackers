@@ -29,6 +29,13 @@ defmodule Proto.Server.Means do
     {:input, [entry | records]}
   end
 
+  defp handle(socket, "Q" <> <<mintime::32>> <> <<maxtime::32>>, records)
+       when mintime > maxtime do
+    resp = 0
+    info(socket, "query response: #{resp}")
+    {:query, <<resp::32>>}
+  end
+
   defp handle(socket, "Q" <> <<mintime::32>> <> <<maxtime::32>>, records) do
     info(socket, "query: #{mintime}-#{maxtime}")
 
