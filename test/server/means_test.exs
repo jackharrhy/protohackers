@@ -73,6 +73,7 @@ defmodule ProtoTest.Server.Means do
     assert 72 == send_query(socket, 0, 100)
     assert 74 == send_query(socket, 21, 100)
     assert 5 == send_query(socket, 46, 46)
+    assert 0 == send_query(socket, 500, 1000)
 
     socket |> close_socket()
   end

@@ -37,7 +37,14 @@ defmodule Proto.Server.Means do
       |> Enum.filter(&(&1[:timestamp] >= mintime and &1[:timestamp] <= maxtime))
       |> Enum.map(& &1[:price])
 
-    mean = round(Enum.sum(prices) / Enum.count(prices))
+    count = Enum.count(prices)
+
+    mean =
+      if count == 0 do
+        0
+      else
+        round(Enum.sum(prices) / Enum.count(prices))
+      end
 
     info(socket, "query response: #{mean}")
     {:query, <<mean::32>>}
