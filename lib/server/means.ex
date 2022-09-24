@@ -54,7 +54,7 @@ defmodule Proto.Server.Means do
     {:query, <<mean::32>>}
   end
 
-  defp parse_packet(socket, <<arg1>> <> <<arg2::32>> <> <<arg3::32>>) do
+  defp parse_packet(socket, <<arg1::8, arg2::32, arg3::32>>) do
     info(socket, "parsed packet: #{arg1} - #{arg2} - #{arg3}")
     {arg1, arg2, arg3}
   end
