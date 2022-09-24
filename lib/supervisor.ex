@@ -17,7 +17,8 @@ defmodule Proto.Supervisor do
       ),
       Supervisor.child_spec({Task, fn -> Proto.Server.Means.run(Proto.Server.Means.port()) end},
         id: "means"
-      )
+      ),
+      {Proto.Story, []}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
