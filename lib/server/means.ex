@@ -22,27 +22,24 @@ defmodule Proto.Server.Means do
     loop_acceptor(socket)
   end
 
-  defp handle(socket, "I" <> <<timestamp::32>> <> <<price::32>>, records) do
+  defp handle(socket, ?I, timestamp, price, records) do
     info(socket, "input: #{timestamp} -> #{price}")
 
     entry = %{:timestamp => timestamp, :price => price}
     {:input, [entry | records]}
   end
 
-  defp handle(socket, "Q" <> <<mintime::32>> <> <<maxtime::32>>, records)
-       when mintime > maxtime do
-    resp = 0
-    info(socket, "query response: #{resp}")
-    {:query, <<resp::32>>}
-  end
-
-  defp handle(socket, "Q" <> <<mintime::32>> <> <<maxtime::32>>, records) do
+  defp handle(socket, ?Q, mintime, maxtime, records) do
     info(socket, "query: #{mintime}-#{maxtime}")
 
     prices =
-      records
-      |> Enum.filter(&(&1[:timestamp] >= mintime and &1[:timestamp] <= maxtime))
-      |> Enum.map(& &1[:price])
+      if mintime > maxtime do
+        []
+      else
+        records
+        |> Enum.filter(&(&1[:timestamp] >= mintime and &1[:timestamp] <= maxtime))
+        |> Enum.map(& &1[:price])
+      end
 
     count = Enum.count(prices)
 
@@ -57,12 +54,19 @@ defmodule Proto.Server.Means do
     {:query, <<mean::32>>}
   end
 
+  defp parse_packet(socket, <<arg1>> <> <<arg2::32>> <> <<arg3::32>>) do
+    info(socket, "parsed packet: #{arg1} - #{arg2} - #{arg3}")
+    {arg1, arg2, arg3}
+  end
+
   defp serve(socket, records \\ []) do
     case :gen_tcp.recv(socket, 9) do
       {:ok, packet} ->
         info(socket, "packet: #{inspect(packet)}")
 
-        case handle(socket, packet, records) do
+        {arg1, arg2, arg3} = parse_packet(socket, packet)
+
+        case handle(socket, arg1, arg2, arg3, records) do
           {:input, records} ->
             serve(socket, records)
 
