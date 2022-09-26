@@ -20,24 +20,14 @@ defmodule Proto.Story do
     GenServer.call(:proto_story, :dump)
   end
 
-  def dump_to_file(path) do
-    GenServer.cast(:proto_story, {:dump, path})
-  end
-
   @impl true
   def handle_cast({:event, payload}, state) do
-    # TODO add event to state
-    # IO.inspect(payload)
-    {:noreply, state}
+    # TODO add payload to bucket based on server / port / etc.
+    {:noreply, [payload, state]}
   end
 
   @impl true
   def handle_call(:dump, _from, state) do
-    {:reply, state, state}
-  end
-
-  @impl true
-  def handle_cast({:dump, path}, state) do
     {:reply, state, state}
   end
 end
