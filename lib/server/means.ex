@@ -62,6 +62,7 @@ defmodule Proto.Server.Means do
   defp serve(socket, records \\ []) do
     case :gen_tcp.recv(socket, 9) do
       {:ok, packet} ->
+        Proto.Story.event(packet)
         info(socket, "packet: #{inspect(packet)}")
 
         {arg1, arg2, arg3} = parse_packet(socket, packet)
