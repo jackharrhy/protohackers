@@ -27,7 +27,8 @@ defmodule Proto.Story do
   @impl true
   def handle_cast({:event, payload}, state) do
     # TODO add payload to bucket based on server / port / etc.
-    {:noreply, [payload | state]}
+    # {:noreply, [payload | state]} TODO bring this back, likely killed due to OOM
+    {:noreply, []}
   end
 
   @impl true
