@@ -78,18 +78,4 @@ defmodule ProtoTest.Server.Means do
 
     socket |> close_socket()
   end
-
-  test "large inputs" do
-    socket =
-      init_socket()
-      |> send_input(0, 2_000_000_000)
-      |> send_input(1, 2_050_000_000)
-      |> send_input(2, 2_100_000_000)
-
-    _mean = send_query(socket, 0, 2)
-
-    # TODO some sort of assertion
-
-    socket |> close_socket()
-  end
 end
