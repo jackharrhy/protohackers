@@ -8,7 +8,7 @@ defmodule Proto.Server.Means do
     Logger.info("Means #{inspect(socket)}: #{message}")
   end
 
-  def run(port) do
+  def run(port \\ @server_port) do
     {:ok, socket} = :gen_tcp.listen(port, [:binary, packet: :raw, active: false, reuseaddr: true])
     info(socket, "accepting connections on port #{port}")
     loop_acceptor(socket)
@@ -54,7 +54,7 @@ defmodule Proto.Server.Means do
     {:query, <<mean::32>>}
   end
 
-  defp parse_packet(socket, <<arg1::8, arg2::32, arg3::32>>) do
+  defp parse_packet(socket, <<arg1, arg2::signed-size(32), arg3::signed-size(32)>>) do
     info(socket, "parsed packet: #{arg1} - #{arg2} - #{arg3}")
     {arg1, arg2, arg3}
   end
@@ -65,15 +65,24 @@ defmodule Proto.Server.Means do
         Proto.Story.event(packet)
         info(socket, "packet: #{inspect(packet)}")
 
-        {arg1, arg2, arg3} = parse_packet(socket, packet)
+        try do
+          {arg1, arg2, arg3} = parse_packet(socket, packet)
+          Proto.Story.event({:packet, arg1, arg2, arg3})
 
-        case handle(socket, arg1, arg2, arg3, records) do
-          {:input, records} ->
-            serve(socket, records)
+          case handle(socket, arg1, arg2, arg3, records) do
+            {:input, records} ->
+              Proto.Story.event({:records, records})
+              serve(socket, records)
 
-          {:query, mean} ->
-            :ok = :gen_tcp.send(socket, mean)
-            serve(socket, records)
+            {:query, mean} ->
+              Proto.Story.event({:mean, mean})
+              :ok = :gen_tcp.send(socket, mean)
+              serve(socket, records)
+          end
+        rescue
+          e ->
+            Proto.Story.event({:error, e})
+            {:error, e}
         end
 
       {:error, e} ->

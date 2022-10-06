@@ -9,13 +9,13 @@ defmodule Proto.Supervisor do
   def init(:ok) do
     children = [
       {Task.Supervisor, name: Proto.TaskSupervisor},
-      Supervisor.child_spec({Task, fn -> Proto.Server.Echo.run(Proto.Server.Echo.port()) end},
+      Supervisor.child_spec({Task, fn -> Proto.Server.Echo.run() end},
         id: "echo"
       ),
-      Supervisor.child_spec({Task, fn -> Proto.Server.Prime.run(Proto.Server.Prime.port()) end},
+      Supervisor.child_spec({Task, fn -> Proto.Server.Prime.run() end},
         id: "prime"
       ),
-      Supervisor.child_spec({Task, fn -> Proto.Server.Means.run(Proto.Server.Means.port()) end},
+      Supervisor.child_spec({Task, fn -> Proto.Server.Means.run() end},
         id: "means"
       ),
       {Proto.Story, []}

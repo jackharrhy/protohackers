@@ -86,7 +86,7 @@ defmodule ProtoTest.Server.Means do
       |> send_input(1, 2_050_000_000)
       |> send_input(2, 2_100_000_000)
 
-    mean = send_query(socket, 0, 2)
+    _mean = send_query(socket, 0, 2)
 
     # TODO some sort of assertion
 

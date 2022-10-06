@@ -8,7 +8,7 @@ defmodule Proto.Server.Echo do
     Logger.info("Echo #{inspect(socket)}: #{message}")
   end
 
-  def run(port) do
+  def run(port \\ @server_port) do
     {:ok, socket} = :gen_tcp.listen(port, [:binary, packet: :raw, active: false, reuseaddr: true])
     info(socket, "accepting connections on port #{port}")
     loop_acceptor(socket)
