@@ -44,7 +44,7 @@ Time progressed, I peeked at other solutions on the protohackers leaderboard, ma
 
 Didn't make any progress on 3/4 in this timeframe due to stubbornness :)
 
-## 3: Budget Chat (`lib/server/budget_chat.ex`)
+## 3: Budget Chat (`lib/server/chat.ex`)
 
 Status: Complete (136th on leaderboard)
 
@@ -81,9 +81,9 @@ When a socket disconnects, `...User` GenServer handles this by informing `...Roo
 
 I took longer than I probably should have to solve this, but it was fun to get my hands dirty with more OTP stuff :)
 
-# 4: Unusual Database Program
+# 4: Unusual Database Program (`lib/server/database.ex`)
 
-Status: Not Started
+Status: In Progress
 
 # Resources
 
@@ -93,3 +93,4 @@ Some of these are just links to the Elixir docs, but they are pages I have frequ
 
 - https://hexdocs.pm/elixir/1.14/GenServer.html
 - https://www.openmymind.net/Elegant-TCP-with-Elixir-Part-1-TCP-as-Messages/
+- https://learnyousomeerlang.com/buckets-of-sockets
