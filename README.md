@@ -83,7 +83,15 @@ I took longer than I probably should have to solve this, but it was fun to get m
 
 # 4: Unusual Database Program (`lib/server/database.ex`)
 
-Status: In Progress
+Status: Complete (101st leaderboard)
+
+Man so close to sub-100! I'll get 'em next time :)
+
+This one was fun, while I knew about UDP before this, I had never really worked directly with it, it was nice that most of the API exposed through `gen_udp` was quite similar to `gen_tcp`, but I didn't quite get initially there was no need for a accept loop, but this makes sense, given the lower-level more manual nature of UDP.
+
+I'm pretty happy with the size of the solution, given I didn't use any of the existing handler infrastructure I created during refactors that came along with the previous question.
+
+(Was quite close to solving it the first time as well, but exposed the port for the problem on TCP, not UDP .-.)
 
 # Resources
 
