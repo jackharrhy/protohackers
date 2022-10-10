@@ -5,19 +5,18 @@ defmodule Proto.Supervisor do
     Supervisor.start_link(__MODULE__, :ok, opts)
   end
 
+  def server_child_spec(module, id) do
+    Supervisor.child_spec({Task, fn -> module.run() end}, id: id)
+  end
+
   @impl true
   def init(:ok) do
     children = [
       {Task.Supervisor, name: Proto.TaskSupervisor},
-      Supervisor.child_spec({Task, fn -> Proto.Server.Echo.run() end},
-        id: "echo"
-      ),
-      Supervisor.child_spec({Task, fn -> Proto.Server.Prime.run() end},
-        id: "prime"
-      ),
-      Supervisor.child_spec({Task, fn -> Proto.Server.Means.run() end},
-        id: "means"
-      )
+      server_child_spec(Proto.Server.Echo, "echo"),
+      server_child_spec(Proto.Server.Prime, "prime"),
+      server_child_spec(Proto.Server.Means, "means"),
+      {Proto.Supervisor.Chat, []}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

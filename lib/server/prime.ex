@@ -1,26 +1,14 @@
 defmodule Proto.Server.Prime do
   require Logger
+  alias Proto.Handler
+  import Proto.Utils
 
   @server_port 4050
   def port, do: @server_port
 
-  def info(socket, message) do
-    Logger.info("Prime #{inspect(socket)}: #{message}")
-  end
-
   def run(port \\ @server_port) do
-    {:ok, socket} = :gen_tcp.listen(port, [:binary, packet: :raw, active: false, reuseaddr: true])
-
-    info(socket, "accepting connections on port #{port}")
-    loop_acceptor(socket)
-  end
-
-  defp loop_acceptor(socket) do
-    {:ok, client} = :gen_tcp.accept(socket)
-    {:ok, pid} = Task.Supervisor.start_child(Proto.TaskSupervisor, fn -> serve(client) end)
-    :ok = :gen_tcp.controlling_process(client, pid)
-    info(socket, "accept #{inspect(client)}, managed by #{inspect(pid)}")
-    loop_acceptor(socket)
+    run_info('Prime', port)
+    Handler.setup(port, :raw, &serve/1)
   end
 
   defp is_prime?(n) when is_float(n), do: false
@@ -58,14 +46,20 @@ defmodule Proto.Server.Prime do
     end
   end
 
-  defp serve(socket) do
-    {:ok, line} = chunk(socket)
-    info(socket, "line #{line}")
+  def handle_line(socket, line) do
     req = Jason.decode!(line)
-    info(socket, "req #{inspect(req)}")
     resp = handle_request(req)
-    info(socket, "resp #{inspect(resp)}")
     :ok = :gen_tcp.send(socket, "#{Jason.encode!(resp)}\n")
-    serve(socket)
+    socket
+  end
+
+  defp serve(socket) do
+    case chunk(socket) do
+      {:ok, line} ->
+        handle_line(socket, line) |> serve
+
+      {:error, e} ->
+        {:error, e}
+    end
   end
 end

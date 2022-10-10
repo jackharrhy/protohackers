@@ -32,4 +32,27 @@ Fixed it up by making my own chunk impl., and tada!
 
 ## 2: Means to an End (`lib/server/means.ex`)
 
+Status: Complete (181st on leaderboard)
+
+Took and _incredibly_ long time to get this one, had it basically it working about two weeks ago, but one of the later test cases was failing.
+
+Wanted to create a test case around the failing test, so went down the path of trying to figure out how to store all messages being sent to the program in a GenServer I dubbed 'Story'.
+
+I spun my wheels against on for a handful of evenings to no avail.  Giving it another go one afternoon, I ran it multiple times, and it failed on different tests, giving me even more reason to park working on it...
+
+Time progressed, I peeked at other solutions on the protohackers leaderboard, made minor modifications to packet handling logic (switching to prefixing bitstring selector stuff with `signed-size`), re-ran again, and boom, passed.
+
+Didn't make any progress on 3/4 in this timeframe due to stubbornness :)
+
+## 3: Budget Chat (`lib/server/budget_chat.ex`)
+
 Status: In Progress
+
+# Resources
+
+Misc. stuff I found useful while solving these problems
+
+Some of these are just links to the Elixir docs, but they are pages I have frequented usually for their great examples of OTP primitives
+
+- https://hexdocs.pm/elixir/1.14/GenServer.html
+- https://www.openmymind.net/Elegant-TCP-with-Elixir-Part-1-TCP-as-Messages/

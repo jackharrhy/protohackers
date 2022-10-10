@@ -1,37 +1,22 @@
 defmodule Proto.Server.Means do
   require Logger
+  alias Proto.Handler
+  import Proto.Utils
 
   @server_port 4060
   def port, do: @server_port
 
-  def info(socket, message) do
-    Logger.info("Means #{inspect(socket)}: #{message}")
-  end
-
   def run(port \\ @server_port) do
-    {:ok, socket} = :gen_tcp.listen(port, [:binary, packet: :raw, active: false, reuseaddr: true])
-    info(socket, "accepting connections on port #{port}")
-    loop_acceptor(socket)
+    run_info('Means', port)
+    Handler.setup(port, :raw, &serve/1)
   end
 
-  defp loop_acceptor(socket) do
-    {:ok, client} = :gen_tcp.accept(socket)
-    {:ok, pid} = Task.Supervisor.start_child(Proto.TaskSupervisor, fn -> serve(client) end)
-    :ok = :gen_tcp.controlling_process(client, pid)
-    info(socket, "accept #{inspect(client)}, managed by #{inspect(pid)}")
-    loop_acceptor(socket)
-  end
-
-  defp handle(socket, ?I, timestamp, price, records) do
-    info(socket, "input: #{timestamp} -> #{price}")
-
+  defp handle(?I, timestamp, price, records) do
     entry = %{:timestamp => timestamp, :price => price}
     {:input, [entry | records]}
   end
 
-  defp handle(socket, ?Q, mintime, maxtime, records) do
-    info(socket, "query: #{mintime}-#{maxtime}")
-
+  defp handle(?Q, mintime, maxtime, records) do
     prices =
       if mintime > maxtime do
         []
@@ -50,24 +35,20 @@ defmodule Proto.Server.Means do
         round(Enum.sum(prices) / Enum.count(prices))
       end
 
-    info(socket, "query response: #{mean}")
     {:query, <<mean::32>>}
   end
 
-  defp parse_packet(socket, <<arg1, arg2::signed-size(32), arg3::signed-size(32)>>) do
-    info(socket, "parsed packet: #{arg1} - #{arg2} - #{arg3}")
+  defp parse_packet(<<arg1, arg2::signed-size(32), arg3::signed-size(32)>>) do
     {arg1, arg2, arg3}
   end
 
   defp serve(socket, records \\ []) do
     case :gen_tcp.recv(socket, 9) do
       {:ok, packet} ->
-        info(socket, "packet: #{inspect(packet)}")
-
         try do
-          {arg1, arg2, arg3} = parse_packet(socket, packet)
+          {arg1, arg2, arg3} = parse_packet(packet)
 
-          case handle(socket, arg1, arg2, arg3, records) do
+          case handle(arg1, arg2, arg3, records) do
             {:input, records} ->
               serve(socket, records)
 
@@ -83,7 +64,5 @@ defmodule Proto.Server.Means do
       {:error, e} ->
         {:error, e}
     end
-
-    serve(socket)
   end
 end
