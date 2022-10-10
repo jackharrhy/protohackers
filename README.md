@@ -1,19 +1,19 @@
 # protohackers
 
-attempts (& sometimes solutions) to https://protohackers.com/ problems
+Attempts (& sometimes solutions) to https://protohackers.com/ problems.
 
-done using elixir, attempting to use minimal libs
+Done using elixir, attempting to use minimal libs.
 
-currently using:
-- [Jason](https://hexdocs.pm/jason/readme.html), for handling encoding / decoding JSON into maps
-- [`gen_tcp`](https://www.erlang.org/doc/man/gen_tcp.html) for handling TCP connections
-- misc. otp-related Elixir things (Application, Supervisor, GenServer, Task, etc.)
+Currently using:
+- [Jason](https://hexdocs.pm/jason/readme.html), for handling encoding / decoding JSON into maps.
+- [`gen_tcp`](https://www.erlang.org/doc/man/gen_tcp.html) for handling TCP connections.
+- Misc. otp-related Elixir things (Application, Supervisor, GenServer, Task, etc.).
 
 ## 0: Smoke Test (`lib/server/echo.ex`)
 
 Status: Complete! (157th on leaderboard)
 
-Attempted to do this without `mix` at first, realized quickly I was going to need OTP primitives to better handle multiple clients at the same time, therefore reached for mix.
+Attempted to do this without `mix` at first, realized quickly I was going to need OTP primitives to better handle multiple clients at the same time, therefore reached for `mix`.
 
 Didn't take too long (mostly because the example on the Elixir docs for how to use `gen_tcp` show how to make an echo server .-.)
 
@@ -46,7 +46,44 @@ Didn't make any progress on 3/4 in this timeframe due to stubbornness :)
 
 ## 3: Budget Chat (`lib/server/budget_chat.ex`)
 
-Status: In Progress
+Status: Complete (136th on leaderboard)
+
+After completing means to an end, I was hyped to get into this problem (since I had known about it for some time, but didn't want to start it until I had finished the previous question).
+
+Thankfully, this submission worked the first time! Which I believe has been a first, which feels _quite nice_.
+
+I reached for something different this time around as well, instead of a single basic handler, a proper supervision tree to handle the problem, as shown below:
+
+```mermaid
+graph TD
+    A[Proto.Server.Chat.Supervisor]
+    A-->B
+    A-->C
+    A-->D
+    B[Proto.Server.Chat.Handler]
+
+    C[Proto.Server.Chat.UserSupervisor]
+    C-->Proto.Server.Chat.User-1
+    C-->Proto.Server.Chat.User-2
+    C-->Proto.Server.Chat.User-3
+    D[Proto.Server.Chat.Room]
+```
+
+`Proto.Server.Chat.Supervisor` is what is ran under the main supervisor to handle the entire problem.
+
+`Proto.Server.Chat.Handler` spawned by `...Supervisor`, something built similar to every solution up until this point, is a listener / loop accept Task, but once a socket has connected and given a valid name, it will move ownership of the socket over to a `Proto.Server.Chat.User` GenServer that is spawned under the `Proto.Server.Chat.UserSupervisor` dynamic supervisor, with the socket being set to active mode.
+
+The first thing a `...User` GenServer does when it starts, is inform the `Proto.Server.Chat.Room` GenServer it has joined, which manages sending out messages to all currently connected clients a new user has joined
+
+Subsequent messages from the socket handled by `...User`, which will then relay socket data to the `...Room` GenServer, to send out as messages to all clients.
+
+When a socket disconnects, `...User` GenServer handles this by informing `...Room` the user has left.
+
+I took longer than I probably should have to solve this, but it was fun to get my hands dirty with more OTP stuff :)
+
+# 4: Unusual Database Program
+
+Status: Not Started
 
 # Resources
 

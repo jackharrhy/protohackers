@@ -16,7 +16,7 @@ defmodule Proto.Supervisor do
       server_child_spec(Proto.Server.Echo, "echo"),
       server_child_spec(Proto.Server.Prime, "prime"),
       server_child_spec(Proto.Server.Means, "means"),
-      {Proto.Supervisor.Chat, []}
+      {Proto.Server.Chat.Supervisor, []}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

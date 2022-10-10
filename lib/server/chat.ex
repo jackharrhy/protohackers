@@ -1,4 +1,4 @@
-defmodule Proto.Supervisor.Chat do
+defmodule Proto.Server.Chat.Supervisor do
   use Supervisor
 
   def start_link(opts) do

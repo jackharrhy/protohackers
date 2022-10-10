@@ -1,6 +1,6 @@
-defmodule ProtoTest.Supervisor.Chat do
+defmodule ProtoTest.Server.Chat.Supervisor do
   use ExUnit.Case, async: false
-  doctest Proto.Supervisor.Chat
+  doctest Proto.Server.Chat.Supervisor
 
   def init_socket() do
     opts = [:binary, active: false, packet: :line]
