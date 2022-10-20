@@ -60,12 +60,14 @@ defmodule Proto.Server.Five.User do
   end
 
   def convert_addresses(data) do
-    String.split(data, " ") |> Enum.map(&convert_address/1) |> Enum.join(" ")
+    converted = String.split(data, " ") |> Enum.map(&convert_address/1) |> Enum.join(" ")
+
+    String.trim(converted) <> "\n"
   end
 
   @impl true
   def handle_info({:tcp, client_socket, data}, {client_socket, outbound_socket} = state) do
-    :ok = :gen_tcp.send(client_socket, convert_addresses(data))
+    :ok = :gen_tcp.send(outbound_socket, convert_addresses(data))
 
     {:noreply, state}
   end
