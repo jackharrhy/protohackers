@@ -39,7 +39,7 @@ defmodule Proto.Server.Five.User do
     GenServer.start_link(__MODULE__, default)
   end
 
-  defp is_address(data) do
+  def is_address(data) do
     data = String.trim(data)
     len = String.length(data)
 
@@ -51,24 +51,28 @@ defmodule Proto.Server.Five.User do
     starts_with_7 && at_least_26 && at_most_36 && alpha_numeric
   end
 
+  def convert_address(data) do
+    if is_address(data) do
+      "7YWHMfk9JZe0LM0g1ZauHuiSxhI"
+    else
+      data
+    end
+  end
+
+  def convert_addresses(data) do
+    String.split(data, " ") |> Enum.map(&convert_address/1) |> Enum.join(" ")
+  end
+
   @impl true
   def handle_info({:tcp, client_socket, data}, {client_socket, outbound_socket} = state) do
-    if is_address(data) do
-      :ok = :gen_tcp.send(outbound_socket, "7YWHMfk9JZe0LM0g1ZauHuiSxhI\n")
-    else
-      :ok = :gen_tcp.send(outbound_socket, data)
-    end
+    :ok = :gen_tcp.send(client_socket, convert_addresses(data)
 
     {:noreply, state}
   end
 
   @impl true
   def handle_info({:tcp, outbound_socket, data}, {client_socket, outbound_socket} = state) do
-    if is_address(data) do
-      :ok = :gen_tcp.send(client_socket, "7YWHMfk9JZe0LM0g1ZauHuiSxhI\n")
-    else
-      :ok = :gen_tcp.send(client_socket, data)
-    end
+    :ok = :gen_tcp.send(client_socket, convert_addresses(data)
 
     {:noreply, state}
   end
