@@ -1,37 +1,11 @@
-defmodule Proto.Server.Five do
-  require Logger
-  alias Proto.Handler
-  import Proto.Utils
-  alias Proto.Server.Five.{User, UserSupervisor}
-
-  @server_port 4090
-  def port, do: @server_port
-
-  def run(port \\ @server_port) do
-    run_info('Five', port)
-    Handler.setup(port, :line, &setup/1)
-  end
-
-  defp setup(socket) do
-    Logger.info("setup")
-    :inet.setopts(socket, active: true)
-    {:ok, pid} = DynamicSupervisor.start_child(UserSupervisor, {User, socket})
-    :gen_tcp.controlling_process(socket, pid)
-  end
-end
-
-defmodule Proto.Server.Five.User do
+defmodule Proto.Server.Mob.Middleman do
   use GenServer, restart: :temporary
   require Logger
 
   @impl true
   def init(client_socket) do
-    Logger.info("init")
     opts = [:binary, active: true, packet: :line]
     {:ok, outbound_socket} = :gen_tcp.connect({206, 189, 113, 124}, 16963, opts)
-
-    Logger.info("outbound socket")
-
     {:ok, {client_socket, outbound_socket}}
   end
 
@@ -60,22 +34,24 @@ defmodule Proto.Server.Five.User do
   end
 
   def convert_addresses(data) do
-    converted = String.split(data, " ") |> Enum.map(&convert_address/1) |> Enum.join(" ")
+    converted =
+      String.split(data, " ")
+      |> Enum.map(&convert_address/1)
+      |> Enum.join(" ")
+      |> String.trim()
 
-    String.trim(converted) <> "\n"
+    converted <> "\n"
   end
 
   @impl true
   def handle_info({:tcp, client_socket, data}, {client_socket, outbound_socket} = state) do
     :ok = :gen_tcp.send(outbound_socket, convert_addresses(data))
-
     {:noreply, state}
   end
 
   @impl true
   def handle_info({:tcp, outbound_socket, data}, {client_socket, outbound_socket} = state) do
     :ok = :gen_tcp.send(client_socket, convert_addresses(data))
-
     {:noreply, state}
   end
 
