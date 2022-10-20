@@ -81,7 +81,7 @@ When a socket disconnects, `...User` GenServer handles this by informing `...Roo
 
 I took longer than I probably should have to solve this, but it was fun to get my hands dirty with more OTP stuff :)
 
-# 4: Unusual Database Program (`lib/server/database.ex`)
+## 4: Unusual Database Program (`lib/server/database.ex`)
 
 Status: Complete (101st on leaderboard)
 
@@ -93,7 +93,7 @@ I'm pretty happy with the size of the solution, given I didn't use any of the ex
 
 (Was quite close to solving it the first time as well, but exposed the port for the problem on TCP, not UDP .-.)
 
-# 5: Mob in the Middle (`lib/server/mob.ex`)
+## 5: Mob in the Middle (`lib/server/mob.ex`)
 
 Status: Complete (4th on leaderboard)
 
