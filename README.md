@@ -83,7 +83,7 @@ I took longer than I probably should have to solve this, but it was fun to get m
 
 # 4: Unusual Database Program (`lib/server/database.ex`)
 
-Status: Complete (101st leaderboard)
+Status: Complete (101st on leaderboard)
 
 Man so close to sub-100! I'll get 'em next time :)
 
@@ -92,6 +92,16 @@ This one was fun, while I knew about UDP before this, I had never really worked 
 I'm pretty happy with the size of the solution, given I didn't use any of the existing handler infrastructure I created during refactors that came along with the previous question.
 
 (Was quite close to solving it the first time as well, but exposed the port for the problem on TCP, not UDP .-.)
+
+# 5: Mob in the Middle (`lib/server/mob.ex`)
+
+Status: Complete (4th on leaderboard)
+
+Wow! First time sub 100, and I managed to snag a sick leaderboard spot!
+
+This one was fantastic, I was able to reach for code from my unit tests for Budget Chat to initialize the socket connection to the real chat.protohackers.com host, and steal the implementation from the User GenServer and use it for a 'middleman' GenServer.
+
+The first commit (the one that got me #4), the module is called 'Five', since I pre-made a handler so I wouldn't waste time copying and pasting code when solving the question (thankfully I wrote a TCP handler, if it was UDP would've had to rejig it).
 
 # Resources
 
