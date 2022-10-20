@@ -65,14 +65,14 @@ defmodule Proto.Server.Five.User do
 
   @impl true
   def handle_info({:tcp, client_socket, data}, {client_socket, outbound_socket} = state) do
-    :ok = :gen_tcp.send(client_socket, convert_addresses(data)
+    :ok = :gen_tcp.send(client_socket, convert_addresses(data))
 
     {:noreply, state}
   end
 
   @impl true
   def handle_info({:tcp, outbound_socket, data}, {client_socket, outbound_socket} = state) do
-    :ok = :gen_tcp.send(client_socket, convert_addresses(data)
+    :ok = :gen_tcp.send(client_socket, convert_addresses(data))
 
     {:noreply, state}
   end
