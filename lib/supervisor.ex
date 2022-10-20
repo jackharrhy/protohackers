@@ -13,11 +13,16 @@ defmodule Proto.Supervisor do
   def init(:ok) do
     children = [
       {Task.Supervisor, name: Proto.TaskSupervisor},
-      server_child_spec(Proto.Server.Echo, "echo"),
-      server_child_spec(Proto.Server.Prime, "prime"),
-      server_child_spec(Proto.Server.Means, "means"),
-      {Proto.Server.Chat.Supervisor, []},
-      server_child_spec(Proto.Server.Database, "database")
+      # server_child_spec(Proto.Server.Echo, "echo"),
+      # server_child_spec(Proto.Server.Prime, "prime"),
+      # server_child_spec(Proto.Server.Means, "means"),
+      # {Proto.Server.Chat.Supervisor, []},
+      # server_child_spec(Proto.Server.Database, "database")
+      {
+        DynamicSupervisor,
+        name: Proto.Server.Five.UserSupervisor, strategy: :one_for_one
+      },
+      server_child_spec(Proto.Server.Five, "five")
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
