@@ -103,6 +103,10 @@ This one was fantastic, I was able to reach for code from my unit tests for Budg
 
 The first commit (the one that got me #4), the module is called 'Five', since I pre-made a handler so I wouldn't waste time copying and pasting code when solving the question (thankfully I wrote a TCP handler, if it was UDP would've had to rejig it).
 
+## 6: Speed Daemon (`lib/server/speed.ex`)
+
+Status: Incomplete
+
 # Resources
 
 Misc. stuff I found useful while solving these problems
